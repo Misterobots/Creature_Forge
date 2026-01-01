@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  creature-forger:
+    image: nginx:mainline-alpine
+    container_name: creature_forger
+    restart: always
+    networks:
+      - saltbox
+    volumes:
+      # Map the application source code to the Nginx root
+      - ./:/usr/share/nginx/html:ro
+      # Nginx processes templates in /etc/nginx/templates/ into /etc/nginx/conf.d/
+      - ./nginx.conf:/etc/nginx/templates/default.conf.template:ro
+    environment:
+      - API_KEY=${GEMINI_API_KEY}
+      - DOMAIN=${DOMAIN}
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.creature-forger.rule=Host(`creatures.${DOMAIN}`)"
+      - "traefik.http.routers.creature-forger.entrypoints=websecure"
+      - "traefik.http.routers.creature-forger.tls.certresolver=letsencrypt"
+      - "traefik.http.services.creature-forger.loadbalancer.server.port=80"
+      - "traefik.docker.network=saltbox"
+
+networks:
+  saltbox:
+    external: true

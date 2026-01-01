@@ -1,0 +1,5 @@
+{
+  "name": "Fantastic Creature Forger",
+  "description": "A playfully interactive 3D model generator that creates unique, 3D-printable creatures via OpenSCAD scripts based on your personality questions.",
+  "requestFramePermissions": []
+}
