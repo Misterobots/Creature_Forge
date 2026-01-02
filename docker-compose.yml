@@ -19,12 +19,25 @@ services:
       - PGID=${PGID:-1000}
       - TZ=${TZ:-UTC}
     labels:
+      - "com.github.saltbox.saltbox_managed=true"
+      - "diun.enable=true"
       - "traefik.enable=true"
+      - "traefik.docker.network=saltbox"
+
+      ## Router Rules
       - "traefik.http.routers.creature-forger.rule=Host(`creatures.${DOMAIN}`)"
       - "traefik.http.routers.creature-forger.entrypoints=websecure"
-      - "traefik.http.routers.creature-forger.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.creature-forger.priority=99"
+
+      ## Middlewares (Standard Saltbox Security Headers)
+      - "traefik.http.routers.creature-forger.middlewares=globalHeaders@file,secureHeaders@file,robotHeaders@file,cloudflarewarp@docker"
+
+      ## TLS / Certs (Using 'cfdns' as per Saltbox Docs, change to 'default' if using custom)
+      - "traefik.http.routers.creature-forger.tls.certresolver=cfdns"
+      - "traefik.http.routers.creature-forger.tls.options=securetls@file"
+
+      ## Service Port
       - "traefik.http.services.creature-forger.loadbalancer.server.port=80"
-      - "traefik.docker.network=saltbox"
 
 networks:
   saltbox:
