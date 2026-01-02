@@ -30,7 +30,7 @@
                 0
             ],
             "geometry_resolution": 512,
-            "threshold": 25
+            "threshold": 1.0
         },
         "class_type": "TripoSRSampler",
         "_meta": {
