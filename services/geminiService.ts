@@ -24,10 +24,10 @@ export const generateCreatureConcept = async (answers: string[]): Promise<Creatu
     1. Invent a unique "Fantastic Creature" name and lore. 
     2. Create a specific image generation prompt for a 3D toy figure of this creature.
     
-    RECONSTRUCTION OPTIMIZATION (FOR TRELLIS AI):
-    - The prompt MUST specify: "Full body shot of the creature, centered in frame, isolated on a solid stark white background, no floor shadow, high-key lighting from multiple angles."
-    - Style: "Clean 3D digital render, smooth surfaces, vibrant colors, playful toy aesthetic."
-    - Avoid: "Complex backgrounds, ground planes, or overlapping objects."
+    RECONSTRUCTION OPTIMIZATION (FOR TRIPOSR AI):
+    - The prompt MUST specify: "Full body shot of the creature, t-pose or neutral standing pose, centered in frame, completely isolated on a solid #FFFFFF white background, high contrast silhouette, no shadows, no floor."
+    - Style: "Clean 3D digital render, smooth clay texture, vibrant colors, minimal detail."
+    - Avoid: "Complex backgrounds, ground planes, shadows, blur, or overlapping objects."
     
     Return a JSON object only.
   `;
@@ -87,7 +87,7 @@ export const generateCreatureImage = async (imagePrompt: string): Promise<string
       const parts = candidates[0].content.parts;
       for (const part of parts) {
         if (part.inlineData && part.inlineData.data) {
-           return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+          return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
         }
       }
     }
@@ -98,13 +98,13 @@ export const generateCreatureImage = async (imagePrompt: string): Promise<string
     const msg = error.message || errorString;
 
     if (
-      msg.includes("403") || 
+      msg.includes("403") ||
       msg.includes("PERMISSION_DENIED") ||
       msg.includes("Requested entity was not found") ||
       (error.error && (error.error.code === 403 || error.error.status === "PERMISSION_DENIED"))
     ) {
       throw error;
     }
-    return ""; 
+    return "";
   }
 };
