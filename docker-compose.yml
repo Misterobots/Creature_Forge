@@ -2,16 +2,11 @@ version: "3.7"
 
 services:
   creature-forger:
-    image: nginx:mainline-alpine
+    build: .
     container_name: creature_forger
     restart: always
     networks:
       - saltbox
-    volumes:
-      # Map the BUILT application (dist) to Nginx root
-      - ./dist:/usr/share/nginx/html:ro
-      # Nginx config
-      - ./nginx.conf:/etc/nginx/templates/default.conf.template:ro
 
     # Healthcheck for easier debugging
     healthcheck:
