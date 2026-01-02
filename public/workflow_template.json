@@ -9,34 +9,6 @@
             "title": "Load Image"
         }
     },
-    "2": {
-        "inputs": {
-            "model": "model.ckpt",
-            "chunk_size": 8192
-        },
-        "class_type": "TripoSRModelLoader",
-        "_meta": {
-            "title": "Load TripoSR Model"
-        }
-    },
-    "3": {
-        "inputs": {
-            "reference_image": [
-                "4",
-                0
-            ],
-            "model": [
-                "2",
-                0
-            ],
-            "geometry_resolution": 512,
-            "threshold": 25
-        },
-        "class_type": "TripoSRSampler",
-        "_meta": {
-            "title": "TripoSR Generation"
-        }
-    },
     "4": {
         "inputs": {
             "upscale_method": "bicubic",
@@ -53,21 +25,9 @@
             "title": "Resize Image (Standard)"
         }
     },
-    "8": {
-        "inputs": {
-            "mesh": [
-                "3",
-                0
-            ]
-        },
-        "class_type": "TripoSRViewer",
-        "_meta": {
-            "title": "TripoSR Mesh Viewer"
-        }
-    },
     "99": {
         "inputs": {
-            "filename_prefix": "DEBUG_TRIPOSR_INPUT",
+            "filename_prefix": "DEBUG_ECHO_TEST",
             "images": [
                 "4",
                 0
