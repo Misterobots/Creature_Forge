@@ -15,18 +15,24 @@ export const generateExternal3D = async (data: CreatureData): Promise<string> =>
         const templateResponse = await fetch('/workflow_template.json');
         if (!templateResponse.ok) throw new Error("Could not load workflow template. Please Ensure 'public/workflow_template.json' exists.");
 
-        // We get it as text to simpler replacement of placeholders
         let workflowStr = await templateResponse.text();
 
-        // 2. Inject Data
-        // We assume the user has put {{POSITIVE_PROMPT}} in their text node
-        // And possibly {{INIT_IMAGE}} if they are doing Img2Img or Img23D
+        // 2. Upload Image (If we have one and the workflow expects it)
+        // Most 3D workflows (Trellis, TripoSR) need an input image.
+        if (data.imageUrl && workflowStr.includes('{{INPUT_IMAGE}}')) {
+            console.log("Uploading 2D concept to ComfyUI...");
+            const uploadedFilename = await uploadToComfy(data.imageUrl);
+            workflowStr = workflowStr.replace('{{INPUT_IMAGE}}', uploadedFilename);
+        }
+
+        // 3. Inject Other Data
+        // Some workflows might still use text prompts
         workflowStr = workflowStr.replace('{{POSITIVE_PROMPT}}', data.imagePrompt || "Cute monster");
 
         // Safety check: parse it back to JSON to ensure validity
         const workflowObj = JSON.parse(workflowStr);
 
-        // 3. Submit to ComfyUI (via VPS Proxy)
+        // 4. Submit to ComfyUI (via VPS Proxy)
         const promptResponse = await fetch(`${API_ENDPOINT}/prompt`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -42,7 +48,7 @@ export const generateExternal3D = async (data: CreatureData): Promise<string> =>
 
         if (!promptId) throw new Error("No prompt_id received from ComfyUI.");
 
-        // 4. Poll for Completion
+        // 5. Poll for Completion
         return await pollComfyHistory(promptId);
 
     } catch (error) {
@@ -50,6 +56,32 @@ export const generateExternal3D = async (data: CreatureData): Promise<string> =>
         throw error;
     }
 };
+
+// Helper to upload the 2D image to ComfyUI so it can be used by LoadImage nodes
+async function uploadToComfy(imageUrl: string): Promise<string> {
+    // 1. Fetch the blob from our own URL (or external URL)
+    const imgRes = await fetch(imageUrl);
+    const blob = await imgRes.blob();
+
+    // 2. Prepare Form Data
+    const formData = new FormData();
+    formData.append('image', blob, 'concept_art.png');
+    formData.append('overwrite', 'true');
+
+    // 3. Upload to ComfyUI
+    const uploadRes = await fetch(`${API_ENDPOINT}/upload/image`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!uploadRes.ok) {
+        throw new Error(`Failed to upload image to ComfyUI: ${uploadRes.statusText}`);
+    }
+
+    const result = await uploadRes.json();
+    // ComfyUI returns { name: "filename.png", subfolder: "", type: "input" }
+    return result.name;
+}
 
 const pollComfyHistory = async (promptId: string): Promise<string> => {
     const POLLING_INTERVAL = 1000;

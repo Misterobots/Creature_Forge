@@ -1,107 +1,113 @@
 {
+    "1": {
+        "inputs": {
+            "image": "{{INPUT_IMAGE}}",
+            "upload": "image"
+        },
+        "class_type": "LoadImage",
+        "_meta": {
+            "title": "Load Image"
+        }
+    },
+    "2": {
+        "inputs": {
+            "model_name": "model.ckpt"
+        },
+        "class_type": "TripoSRModelLoader",
+        "_meta": {
+            "title": "Load TripoSR Model"
+        }
+    },
     "3": {
         "inputs": {
-            "seed": 156680208700286,
-            "steps": 20,
-            "cfg": 8,
-            "sampler_name": "euler",
-            "scheduler": "normal",
-            "denoise": 1,
-            "model": [
+            "image": [
                 "4",
                 0
             ],
-            "positive": [
-                "6",
+            "model": [
+                "2",
                 0
             ],
-            "negative": [
+            "geometry_resolution": 256,
+            "threshold": 25,
+            "reference_mask": [
                 "7",
-                0
-            ],
-            "latent_image": [
-                "5",
                 0
             ]
         },
-        "class_type": "KSampler",
+        "class_type": "TripoSRSampler",
         "_meta": {
-            "title": "KSampler"
+            "title": "TripoSR Generation"
         }
     },
     "4": {
         "inputs": {
-            "ckpt_name": "v1-5-pruned-emaonly.ckpt"
+            "upscale_method": "bicubic",
+            "width": 512,
+            "height": 512,
+            "crop": "center",
+            "image": [
+                "1",
+                0
+            ]
         },
-        "class_type": "CheckpointLoaderSimple",
+        "class_type": "ImageScale",
         "_meta": {
-            "title": "Load Checkpoint"
+            "title": "Resize Image (Standard)"
         }
     },
     "5": {
         "inputs": {
-            "width": 512,
-            "height": 512,
-            "batch_size": 1
+            "mask": [
+                "1",
+                1
+            ]
         },
-        "class_type": "EmptyLatentImage",
+        "class_type": "MaskToImage",
         "_meta": {
-            "title": "Empty Latent Image"
+            "title": "Convert Mask to Image"
         }
     },
     "6": {
         "inputs": {
-            "text": "{{POSITIVE_PROMPT}}",
-            "clip": [
-                "4",
-                1
+            "upscale_method": "bicubic",
+            "width": 512,
+            "height": 512,
+            "crop": "center",
+            "image": [
+                "5",
+                0
             ]
         },
-        "class_type": "CLIPTextEncode",
+        "class_type": "ImageScale",
         "_meta": {
-            "title": "CLIP Text Encode (Prompt)"
+            "title": "Resize Mask Image"
         }
     },
     "7": {
         "inputs": {
-            "text": "text, watermark",
-            "clip": [
-                "4",
-                1
+            "channel": "red",
+            "image": [
+                "6",
+                0
             ]
         },
-        "class_type": "CLIPTextEncode",
+        "class_type": "ImageToMask",
         "_meta": {
-            "title": "CLIP Text Encode (Negative)"
+            "title": "Convert Image to Mask"
         }
     },
     "8": {
         "inputs": {
-            "samples": [
+            "mesh": [
                 "3",
                 0
-            ],
-            "vae": [
-                "4",
-                2
             ]
         },
-        "class_type": "VAEDecode",
+        "class_type": "TripoSRViewer",
         "_meta": {
-            "title": "VAE Decode"
+            "title": "TripoSR Mesh Viewer"
         }
     },
-    "9": {
-        "inputs": {
-            "filename_prefix": "ComfyUI",
-            "images": [
-                "8",
-                0
-            ]
-        },
-        "class_type": "SaveImage",
-        "_meta": {
-            "title": "Save Image"
-        }
-    }
+    "Warning": "THIS IS A TEMPLATE. Replace with your actual exported JSON. This version includes mandatory Mask Resizing."
 }
