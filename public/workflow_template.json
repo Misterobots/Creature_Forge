@@ -11,7 +11,8 @@
     },
     "2": {
         "inputs": {
-            "model_name": "model.ckpt"
+            "model": "model.ckpt",
+            "chunk_size": 8192
         },
         "class_type": "TripoSRModelLoader",
         "_meta": {
@@ -20,7 +21,7 @@
     },
     "3": {
         "inputs": {
-            "image": [
+            "reference_image": [
                 "4",
                 0
             ],
