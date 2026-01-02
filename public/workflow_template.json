@@ -29,12 +29,8 @@
                 "2",
                 0
             ],
-            "geometry_resolution": 256,
-            "threshold": 1,
-            "reference_mask": [
-                "7",
-                0
-            ]
+            "geometry_resolution": 512,
+            "threshold": 25
         },
         "class_type": "TripoSRSampler",
         "_meta": {
@@ -46,7 +42,7 @@
             "upscale_method": "bicubic",
             "width": 512,
             "height": 512,
-            "crop": "center",
+            "crop": "disabled",
             "image": [
                 "1",
                 0
@@ -55,47 +51,6 @@
         "class_type": "ImageScale",
         "_meta": {
             "title": "Resize Image (Standard)"
-        }
-    },
-    "5": {
-        "inputs": {
-            "mask": [
-                "1",
-                1
-            ]
-        },
-        "class_type": "MaskToImage",
-        "_meta": {
-            "title": "Convert Mask to Image"
-        }
-    },
-    "6": {
-        "inputs": {
-            "upscale_method": "bicubic",
-            "width": 512,
-            "height": 512,
-            "crop": "center",
-            "image": [
-                "5",
-                0
-            ]
-        },
-        "class_type": "ImageScale",
-        "_meta": {
-            "title": "Resize Mask Image"
-        }
-    },
-    "7": {
-        "inputs": {
-            "channel": "red",
-            "image": [
-                "6",
-                0
-            ]
-        },
-        "class_type": "ImageToMask",
-        "_meta": {
-            "title": "Convert Image to Mask"
         }
     },
     "8": {
@@ -108,6 +63,19 @@
         "class_type": "TripoSRViewer",
         "_meta": {
             "title": "TripoSR Mesh Viewer"
+        }
+    },
+    "99": {
+        "inputs": {
+            "filename_prefix": "DEBUG_TRIPOSR_INPUT",
+            "images": [
+                "4",
+                0
+            ]
+        },
+        "class_type": "SaveImage",
+        "_meta": {
+            "title": "DEBUG: Save Input Image"
         }
     }
 }
