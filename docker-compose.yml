@@ -8,10 +8,17 @@ services:
     networks:
       - saltbox
     volumes:
-      # Map the application source code to the Nginx root
-      - ./:/usr/share/nginx/html:ro
-      # Nginx processes templates in /etc/nginx/templates/ into /etc/nginx/conf.d/
+      # Map the BUILT application (dist) to Nginx root
+      - ./dist:/usr/share/nginx/html:ro
+      # Nginx config
       - ./nginx.conf:/etc/nginx/templates/default.conf.template:ro
+
+    # Healthcheck for easier debugging
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     environment:
       - API_KEY=${GEMINI_API_KEY}
       - DOMAIN=${DOMAIN}
