@@ -12,6 +12,7 @@ interface ExternalGeneratorProps {
 export const ExternalGenerator: React.FC<ExternalGeneratorProps> = ({ data, onImageGenerated }) => {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [modelUrl, setModelUrl] = useState<string | null>(null);
+    const [objUrl, setObjUrl] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const handleGenerate = async () => {
@@ -26,6 +27,7 @@ export const ExternalGenerator: React.FC<ExternalGeneratorProps> = ({ data, onIm
 
             if (result.modelUrl) {
                 setModelUrl(result.modelUrl);
+                setObjUrl(result.objUrl || null);
                 setStatus('success');
             } else {
                 throw new Error("No model URL returned from worker.");
@@ -107,12 +109,23 @@ export const ExternalGenerator: React.FC<ExternalGeneratorProps> = ({ data, onIm
                             >
                             </model-viewer>
                         </div>
-                        <Button
-                            onClick={() => window.open(modelUrl, '_blank')}
-                            className="w-full bg-green-600 hover:bg-green-700 text-white"
-                        >
-                            Download .GLB Model
-                        </Button>
+                        <div className="w-full space-y-2">
+                            <Button
+                                onClick={() => window.open(modelUrl, '_blank')}
+                                className="w-full bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                Download .GLB (Web Ready)
+                            </Button>
+
+                            {objUrl && (
+                                <Button
+                                    onClick={() => window.open(objUrl, '_blank')}
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                                >
+                                    Download .OBJ (Print Ready)
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>

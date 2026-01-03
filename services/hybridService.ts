@@ -156,8 +156,6 @@ const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
 
                     const result: HybridOutput = {};
 
-                    let fallbackModelUrl: string | undefined;
-
                     // Iterate through ALL outputs to find images and models
                     for (const nodeId in outputs) {
                         const nodeOutput = outputs[nodeId];
@@ -173,37 +171,28 @@ const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
                         // TripoSR nodes often use 'mesh' (singular) or 'meshes' (plural)
                         const meshOutput = nodeOutput.models || nodeOutput.meshes || nodeOutput.mesh;
 
-                        if (meshOutput && meshOutput.length > 0) {
-                            const item = meshOutput[0];
+                        // Helper to extract specific formats
+                        const checkAndAssign = (item: any) => {
                             const url = `${API_ENDPOINT}/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
-
-                            // Prioritize GLB (Web Ready)
                             if (item.filename.toLowerCase().endsWith('.glb')) {
                                 result.modelUrl = url;
-                            } else {
-                                // Store as fallback (e.g. OBJ) if (we haven't found a GLB yet)
-                                if (!result.modelUrl) fallbackModelUrl = url;
+                            } else if (item.filename.toLowerCase().endsWith('.obj')) {
+                                result.objUrl = url;
                             }
+                        };
+
+                        if (meshOutput && meshOutput.length > 0) {
+                            checkAndAssign(meshOutput[0]);
                         }
 
                         // Fallback: Check for generic files
                         if (nodeOutput.files && nodeOutput.files.length > 0) {
-                            const f = nodeOutput.files[0];
-                            if (f.filename.endsWith('.glb') || f.filename.endsWith('.obj')) {
-                                const url = `${API_ENDPOINT}/view?filename=${f.filename}&type=${f.type}&subfolder=${f.subfolder}`;
-                                if (f.filename.endsWith('.glb')) result.modelUrl = url;
-                                else if (!result.modelUrl) fallbackModelUrl = url;
-                            }
+                            checkAndAssign(nodeOutput.files[0]);
                         }
                     }
 
-                    // Use fallback if no GLB found
-                    if (!result.modelUrl && fallbackModelUrl) {
-                        result.modelUrl = fallbackModelUrl;
-                    }
-
                     // Only return if we found *something*
-                    if (result.modelUrl || result.imageUrl) {
+                    if (result.modelUrl || result.imageUrl || result.objUrl) {
                         return result;
                     }
                 }
