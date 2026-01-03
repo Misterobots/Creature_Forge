@@ -135,10 +135,12 @@ async function uploadToComfy(imageUrl: string): Promise<string> {
 // Update pollComfyHistory to return HybridOutput
 const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
     const POLLING_INTERVAL = 1000;
-    const MAX_ATTEMPTS = 120; // 2 minutes
+    const MAX_ATTEMPTS = 600; // 10 minutes
 
     for (let i = 0; i < MAX_ATTEMPTS; i++) {
         try {
+            if (i % 10 === 0) console.log(`[Hybrid] Polling ComfyUI... Attempt ${i}/${MAX_ATTEMPTS}`);
+
             // We check the history endpoint. If the promptId appears there, it's done.
             const response = await fetch(`${API_ENDPOINT}/history/${promptId}`);
 
