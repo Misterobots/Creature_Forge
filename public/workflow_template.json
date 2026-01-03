@@ -96,5 +96,18 @@
         "_meta": {
             "title": "Invert to Subject Mask"
         }
+    },
+    "99": {
+        "inputs": {
+            "filename_prefix": "Creature_Model",
+            "mesh": [
+                "3",
+                0
+            ]
+        },
+        "class_type": "SaveTripoSRMesh",
+        "_meta": {
+            "title": "Save 3D Model"
+        }
     }
 }
