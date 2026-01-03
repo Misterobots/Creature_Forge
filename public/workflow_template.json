@@ -1,97 +1,15 @@
 {
     "1": {
         "inputs": {
-            "ckpt_name": "sd_xl_turbo_1.0_fp16.safetensors"
+            "image": "{{INPUT_IMAGE}}",
+            "upload": "image"
         },
-        "class_type": "CheckpointLoaderSimple",
+        "class_type": "LoadImage",
         "_meta": {
-            "title": "Load SDXL Turbo"
+            "title": "Load Image"
         }
     },
     "2": {
-        "inputs": {
-            "text": "{{PROMPT}}, chunky vinyl toy, white background, high quality",
-            "clip": [
-                "1",
-                1
-            ]
-        },
-        "class_type": "CLIPTextEncode",
-        "_meta": {
-            "title": "Positive Prompt"
-        }
-    },
-    "3": {
-        "inputs": {
-            "text": "text, watermark, low quality, blurry, deformed, nsfw",
-            "clip": [
-                "1",
-                1
-            ]
-        },
-        "class_type": "CLIPTextEncode",
-        "_meta": {
-            "title": "Negative Prompt"
-        }
-    },
-    "4": {
-        "inputs": {
-            "seed": 0,
-            "steps": 8,
-            "cfg": 1.8,
-            "sampler_name": "euler_ancestral",
-            "scheduler": "normal",
-            "denoise": 1,
-            "model": [
-                "1",
-                0
-            ],
-            "positive": [
-                "2",
-                0
-            ],
-            "negative": [
-                "3",
-                0
-            ],
-            "latent_image": [
-                "5",
-                0
-            ]
-        },
-        "class_type": "KSampler",
-        "_meta": {
-            "title": "Generate Image (Turbo)"
-        }
-    },
-    "5": {
-        "inputs": {
-            "width": 512,
-            "height": 512,
-            "batch_size": 1
-        },
-        "class_type": "EmptyLatentImage",
-        "_meta": {
-            "title": "Empty Latent 512x512"
-        }
-    },
-    "6": {
-        "inputs": {
-            "samples": [
-                "4",
-                0
-            ],
-            "vae": [
-                "1",
-                2
-            ]
-        },
-        "class_type": "VAEDecode",
-        "_meta": {
-            "title": "Decode to Pixel"
-        }
-    },
-    "10": {
         "inputs": {
             "model": "model.ckpt",
             "chunk_size": 8192
@@ -101,20 +19,20 @@
             "title": "Load TripoSR Model"
         }
     },
-    "11": {
+    "3": {
         "inputs": {
             "reference_image": [
-                "14",
+                "4",
                 0
             ],
             "model": [
-                "10",
+                "2",
                 0
             ],
             "geometry_resolution": 512,
             "threshold": 2.5,
             "reference_mask": [
-                "16",
+                "10",
                 0
             ]
         },
@@ -123,26 +41,26 @@
             "title": "TripoSR Generation"
         }
     },
-    "14": {
+    "4": {
         "inputs": {
             "upscale_method": "bicubic",
             "width": 512,
             "height": 512,
             "crop": "disabled",
             "image": [
-                "6",
+                "1",
                 0
             ]
         },
         "class_type": "ImageScale",
         "_meta": {
-            "title": "Resize Image (Safety)"
+            "title": "Resize Image (Standard)"
         }
     },
-    "15": {
+    "8": {
         "inputs": {
             "mesh": [
-                "11",
+                "3",
                 0
             ]
         },
@@ -151,10 +69,26 @@
             "title": "TripoSR Mesh Viewer"
         }
     },
-    "16": {
+    "9": {
+        "inputs": {
+            "red": 255,
+            "green": 255,
+            "blue": 255,
+            "threshold": 60,
+            "image": [
+                "4",
+                0
+            ]
+        },
+        "class_type": "MaskFromColor+",
+        "_meta": {
+            "title": "Select White Background (Aggressive)"
+        }
+    },
+    "10": {
         "inputs": {
             "mask": [
-                "17",
+                "9",
                 0
             ]
         },
@@ -163,33 +97,17 @@
             "title": "Invert to Subject Mask"
         }
     },
-    "17": {
-        "inputs": {
-            "red": 255,
-            "green": 255,
-            "blue": 255,
-            "threshold": 60,
-            "image": [
-                "14",
-                0
-            ]
-        },
-        "class_type": "MaskFromColor+",
-        "_meta": {
-            "title": "Select White Background"
-        }
-    },
     "99": {
         "inputs": {
-            "filename_prefix": "DEBUG_LOCAL_GEN",
+            "filename_prefix": "DEBUG_MASK_CHECK",
             "images": [
-                "14",
+                "10",
                 0
             ]
         },
         "class_type": "SaveImage",
         "_meta": {
-            "title": "DEBUG: Save Generated Image"
+            "title": "DEBUG: Save Mask"
         }
     }
 }
