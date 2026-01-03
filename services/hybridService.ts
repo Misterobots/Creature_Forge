@@ -140,6 +140,7 @@ const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
     for (let i = 0; i < MAX_ATTEMPTS; i++) {
         try {
             if (i % 10 === 0) console.log(`[Hybrid] Polling ComfyUI... Attempt ${i}/${MAX_ATTEMPTS}`);
+            if (i === 0) console.log("[Hybrid] Parsing Logic Update Loaded - Checking for mesh keys...");
 
             // We check the history endpoint. If the promptId appears there, it's done.
             const response = await fetch(`${API_ENDPOINT}/history/${promptId}`);
