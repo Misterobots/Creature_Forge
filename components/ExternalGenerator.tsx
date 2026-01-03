@@ -6,9 +6,10 @@ import { Loader2, Box, Info } from 'lucide-react';
 
 interface ExternalGeneratorProps {
     data: CreatureData;
+    onImageGenerated?: (url: string) => void;
 }
 
-export const ExternalGenerator: React.FC<ExternalGeneratorProps> = ({ data }) => {
+export const ExternalGenerator: React.FC<ExternalGeneratorProps> = ({ data, onImageGenerated }) => {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [modelUrl, setModelUrl] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -17,9 +18,18 @@ export const ExternalGenerator: React.FC<ExternalGeneratorProps> = ({ data }) =>
         setStatus('loading');
         setErrorMsg(null);
         try {
-            const url = await generateExternal3D(data);
-            setModelUrl(url);
-            setStatus('success');
+            const result = await generateExternal3D(data);
+
+            if (result.imageUrl && onImageGenerated) {
+                onImageGenerated(result.imageUrl);
+            }
+
+            if (result.modelUrl) {
+                setModelUrl(result.modelUrl);
+                setStatus('success');
+            } else {
+                throw new Error("No model URL returned from worker.");
+            }
         } catch (err: any) {
             console.error(err);
             setStatus('error');
