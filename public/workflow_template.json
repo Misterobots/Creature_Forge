@@ -30,7 +30,11 @@
                 0
             ],
             "geometry_resolution": 512,
-            "threshold": 1.0
+            "threshold": 5.0,
+            "reference_mask": [
+                "10",
+                0
+            ]
         },
         "class_type": "TripoSRSampler",
         "_meta": {
@@ -63,6 +67,34 @@
         "class_type": "TripoSRViewer",
         "_meta": {
             "title": "TripoSR Mesh Viewer"
+        }
+    },
+    "9": {
+        "inputs": {
+            "red": 255,
+            "green": 255,
+            "blue": 255,
+            "threshold": 10,
+            "image": [
+                "4",
+                0
+            ]
+        },
+        "class_type": "MaskFromColor+",
+        "_meta": {
+            "title": "Select White Background"
+        }
+    },
+    "10": {
+        "inputs": {
+            "mask": [
+                "9",
+                0
+            ]
+        },
+        "class_type": "InvertMask",
+        "_meta": {
+            "title": "Invert to Subject Mask"
         }
     }
 }
