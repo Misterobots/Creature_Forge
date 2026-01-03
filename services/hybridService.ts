@@ -158,6 +158,7 @@ const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
                     // Iterate through ALL outputs to find images and models
                     for (const nodeId in outputs) {
                         const nodeOutput = outputs[nodeId];
+                        console.log(`[Hybrid] FULL OUTPUT for Node ${nodeId}:`, JSON.stringify(nodeOutput, null, 2));
 
                         // Check for Images (2D Render)
                         if (nodeOutput.images && nodeOutput.images.length > 0) {
