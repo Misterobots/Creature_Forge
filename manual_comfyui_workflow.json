@@ -1,0 +1,113 @@
+{
+    "1": {
+        "inputs": {
+            "image": "example.png",
+            "upload": "image"
+        },
+        "class_type": "LoadImage",
+        "_meta": {
+            "title": "Load Image"
+        }
+    },
+    "2": {
+        "inputs": {
+            "model": "model.ckpt",
+            "chunk_size": 8192
+        },
+        "class_type": "TripoSRModelLoader",
+        "_meta": {
+            "title": "Load TripoSR Model"
+        }
+    },
+    "3": {
+        "inputs": {
+            "reference_image": [
+                "4",
+                0
+            ],
+            "model": [
+                "2",
+                0
+            ],
+            "geometry_resolution": 1024,
+            "threshold": 2.5,
+            "reference_mask": [
+                "10",
+                0
+            ]
+        },
+        "class_type": "TripoSRSampler",
+        "_meta": {
+            "title": "TripoSR Generation"
+        }
+    },
+    "4": {
+        "inputs": {
+            "upscale_method": "bicubic",
+            "width": 512,
+            "height": 512,
+            "crop": "disabled",
+            "image": [
+                "1",
+                0
+            ]
+        },
+        "class_type": "ImageScale",
+        "_meta": {
+            "title": "Resize Image (Standard)"
+        }
+    },
+    "8": {
+        "inputs": {
+            "mesh": [
+                "3",
+                0
+            ]
+        },
+        "class_type": "TripoSRViewer",
+        "_meta": {
+            "title": "TripoSR Mesh Viewer"
+        }
+    },
+    "9": {
+        "inputs": {
+            "red": 255,
+            "green": 255,
+            "blue": 255,
+            "threshold": 60,
+            "image": [
+                "4",
+                0
+            ]
+        },
+        "class_type": "MaskFromColor+",
+        "_meta": {
+            "title": "Select White Background (Aggressive)"
+        }
+    },
+    "10": {
+        "inputs": {
+            "mask": [
+                "9",
+                0
+            ]
+        },
+        "class_type": "InvertMask",
+        "_meta": {
+            "title": "Invert to Subject Mask"
+        }
+    },
+    "99": {
+        "inputs": {
+            "filename_prefix": "DEBUG_MASK_CHECK",
+            "images": [
+                "10",
+                0
+            ]
+        },
+        "class_type": "SaveImage",
+        "_meta": {
+            "title": "DEBUG: Save Mask"
+        }
+    }
+}
