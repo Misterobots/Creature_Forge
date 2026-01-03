@@ -19,15 +19,18 @@ export const generateExternal3D = async (data: CreatureData): Promise<string> =>
 
         // 2. Upload Image (If we have one and the workflow expects it)
         // Most 3D workflows (Trellis, TripoSR) need an input image.
-        if (data.imageUrl && workflowStr.includes('{{INPUT_IMAGE}}')) {
+        // 2. Upload Image (If we have one and the workflow expects it)
+        // Check if we are doing Local Generation (skip upload)
+        if (data.imageUrl && data.imageUrl !== "LOCAL_GENERATION" && workflowStr.includes('{{INPUT_IMAGE}}')) {
             console.log("Uploading 2D concept to ComfyUI...");
             const uploadedFilename = await uploadToComfy(data.imageUrl);
             workflowStr = workflowStr.replace('{{INPUT_IMAGE}}', uploadedFilename);
         }
 
         // 3. Inject Other Data
-        // Some workflows might still use text prompts
+        // Inject the Prompt for Local Generation
         workflowStr = workflowStr.replace('{{POSITIVE_PROMPT}}', data.imagePrompt || "Cute monster");
+        workflowStr = workflowStr.replace('{{PROMPT}}', data.imagePrompt || "Cute monster");
 
         // Safety check: parse it back to JSON to ensure validity
         const workflowObj = JSON.parse(workflowStr);

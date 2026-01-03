@@ -64,47 +64,12 @@ export const generateCreatureConcept = async (answers: string[]): Promise<Creatu
 /**
  * Step 2: Generate the 2D Image from the concept.
  */
+/**
+ * Step 2: Generate the 2D Image from the concept.
+ * UPDATE: Returns a placeholder for Local Generation logic.
+ */
 export const generateCreatureImage = async (imagePrompt: string): Promise<string> => {
-  const ai = getClient();
-  const modelId = "gemini-3-pro-image-preview";
-
-  try {
-    const response = await ai.models.generateContent({
-      model: modelId,
-      contents: {
-        parts: [{ text: imagePrompt }]
-      },
-      config: {
-        imageConfig: {
-          aspectRatio: "1:1",
-          imageSize: "1K"
-        }
-      }
-    });
-
-    const candidates = response.candidates;
-    if (candidates && candidates.length > 0) {
-      const parts = candidates[0].content.parts;
-      for (const part of parts) {
-        if (part.inlineData && part.inlineData.data) {
-          return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
-        }
-      }
-    }
-    throw new Error("No image generated");
-  } catch (error: any) {
-    console.error("Image Gen Error", error);
-    const errorString = JSON.stringify(error);
-    const msg = error.message || errorString;
-
-    if (
-      msg.includes("403") ||
-      msg.includes("PERMISSION_DENIED") ||
-      msg.includes("Requested entity was not found") ||
-      (error.error && (error.error.code === 403 || error.error.status === "PERMISSION_DENIED"))
-    ) {
-      throw error;
-    }
-    return "";
-  }
+  // We are now generating locally on the worker.
+  // We return a flag to tell the UI/Hybrid service to skip the upload.
+  return "LOCAL_GENERATION";
 };
