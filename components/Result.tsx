@@ -83,40 +83,40 @@ export const Result: React.FC<ResultProps> = ({ data, onReset, isToddlerMode }) 
       <div className="flex justify-center mb-8">
         <div className="bg-white rounded-3xl p-1 shadow-xl border-4 border-slate-100 max-w-4xl w-full h-[600px] flex flex-col relative overflow-hidden">
           {activeTab === '2d' ? (
-            { activeTab === '2d' ? (
-              <div className="w-full h-full relative group">
-                {currentImageUrl && currentImageUrl !== "LOCAL_GENERATION" ? (
-                  <>
-                    <img
-                      src={currentImageUrl}
-                      alt={data.name}
-                      className="w-full h-full object-contain bg-slate-50"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                      {/* Overlay content if needed */}
-                    </div>
-                    <div className="absolute bottom-6 right-6 pointer-events-auto">
-                      <Button variant="secondary" size="lg" onClick={handleDownloadImage} className="shadow-xl">
-                        <ImageDown className="w-5 h-5 mr-2" />
-                        Save Image
-                      </Button>
-                    </div>
-                  </>
-                ) : currentImageUrl === "LOCAL_GENERATION" ? (
-                  <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4">
-                    <Sparkles className="w-12 h-12 text-brand-400" />
-                    <p className="text-lg font-medium">Concept Ready for Forging</p>
-                    <p className="text-sm opacity-70">Switch to the "Home Forge 3D" tab to generate the image & model locally.</p>
+
+            <div className="w-full h-full relative group">
+              {currentImageUrl && currentImageUrl !== "LOCAL_GENERATION" ? (
+                <>
+                  <img
+                    src={currentImageUrl}
+                    alt={data.name}
+                    className="w-full h-full object-contain bg-slate-50"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                    {/* Overlay content if needed */}
                   </div>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-slate-400 text-sm">
-                    Image Unavailable
+                  <div className="absolute bottom-6 right-6 pointer-events-auto">
+                    <Button variant="secondary" size="lg" onClick={handleDownloadImage} className="shadow-xl">
+                      <ImageDown className="w-5 h-5 mr-2" />
+                      Save Image
+                    </Button>
                   </div>
-                )}
-              </div>
-            ) : (
-              <ExternalGenerator data={data} onImageGenerated={handleImageGenerated} />
-            )}
+                </>
+              ) : currentImageUrl === "LOCAL_GENERATION" ? (
+                <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4">
+                  <Sparkles className="w-12 h-12 text-brand-400" />
+                  <p className="text-lg font-medium">Concept Ready for Forging</p>
+                  <p className="text-sm opacity-70">Switch to the "Home Forge 3D" tab to generate the image & model locally.</p>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-slate-400 text-sm">
+                  Image Unavailable
+                </div>
+              )}
+            </div>
+          ) : (
+            <ExternalGenerator data={data} onImageGenerated={handleImageGenerated} />
+          )}
         </div>
       </div>
 
