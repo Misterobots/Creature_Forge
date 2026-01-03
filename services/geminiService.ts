@@ -68,8 +68,12 @@ export const generateCreatureConcept = async (answers: string[]): Promise<Creatu
  * Step 2: Generate the 2D Image from the concept.
  * UPDATE: Returns a placeholder for Local Generation logic.
  */
+import { generateLocal2D } from './hybridService';
+
+/**
+ * Step 2: Generate the 2D Image from the concept.
+ * UPDATE: Calls the Local Worker (ComfyUI) to generate the image.
+ */
 export const generateCreatureImage = async (imagePrompt: string): Promise<string> => {
-  // We are now generating locally on the worker.
-  // We return a flag to tell the UI/Hybrid service to skip the upload.
-  return "LOCAL_GENERATION";
+  return generateLocal2D(imagePrompt);
 };
