@@ -155,10 +155,12 @@ const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
 
                     const result: HybridOutput = {};
 
+                    let fallbackModelUrl: string | undefined;
+
                     // Iterate through ALL outputs to find images and models
                     for (const nodeId in outputs) {
                         const nodeOutput = outputs[nodeId];
-                        console.log(`[Hybrid] FULL OUTPUT for Node ${nodeId}:`, JSON.stringify(nodeOutput, null, 2));
+                        // console.log(`[Hybrid] FULL OUTPUT for Node ${nodeId}:`, JSON.stringify(nodeOutput, null, 2));
 
                         // Check for Images (2D Render)
                         if (nodeOutput.images && nodeOutput.images.length > 0) {
@@ -166,20 +168,37 @@ const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
                             result.imageUrl = `${API_ENDPOINT}/view?filename=${img.filename}&type=${img.type}&subfolder=${img.subfolder}`;
                         }
 
-                        // Check for Models (TripoSR Output)
-                        if (nodeOutput.models && nodeOutput.models.length > 0) {
-                            const model = nodeOutput.models[0];
-                            result.modelUrl = `${API_ENDPOINT}/view?filename=${model.filename}&type=${model.type}&subfolder=${model.subfolder}`;
-                        }
+                        // Check for Models/Meshes (Standard & TripoSR)
+                        // TripoSR nodes often use 'mesh' (singular) or 'meshes' (plural)
+                        const meshOutput = nodeOutput.models || nodeOutput.meshes || nodeOutput.mesh;
 
-                        // Fallback: Check for generic files (sometimes models are here)
-                        // Only set if we haven't found a model yet, and the extension looks like a model
-                        if (!result.modelUrl && nodeOutput.files && nodeOutput.files.length > 0) {
-                            const f = nodeOutput.files[0];
-                            if (f.filename.endsWith('.glb') || f.filename.endsWith('.obj')) {
-                                result.modelUrl = `${API_ENDPOINT}/view?filename=${f.filename}&type=${f.type}&subfolder=${f.subfolder}`;
+                        if (meshOutput && meshOutput.length > 0) {
+                            const item = meshOutput[0];
+                            const url = `${API_ENDPOINT}/view?filename=${item.filename}&type=${item.type}&subfolder=${item.subfolder}`;
+
+                            // Prioritize GLB (Web Ready)
+                            if (item.filename.toLowerCase().endsWith('.glb')) {
+                                result.modelUrl = url;
+                            } else {
+                                // Store as fallback (e.g. OBJ) if (we haven't found a GLB yet)
+                                if (!result.modelUrl) fallbackModelUrl = url;
                             }
                         }
+
+                        // Fallback: Check for generic files
+                        if (nodeOutput.files && nodeOutput.files.length > 0) {
+                            const f = nodeOutput.files[0];
+                            if (f.filename.endsWith('.glb') || f.filename.endsWith('.obj')) {
+                                const url = `${API_ENDPOINT}/view?filename=${f.filename}&type=${f.type}&subfolder=${f.subfolder}`;
+                                if (f.filename.endsWith('.glb')) result.modelUrl = url;
+                                else if (!result.modelUrl) fallbackModelUrl = url;
+                            }
+                        }
+                    }
+
+                    // Use fallback if no GLB found
+                    if (!result.modelUrl && fallbackModelUrl) {
+                        result.modelUrl = fallbackModelUrl;
                     }
 
                     // Only return if we found *something*
