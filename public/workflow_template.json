@@ -30,7 +30,7 @@
                 0
             ],
             "geometry_resolution": 512,
-            "threshold": 2.5,
+            "threshold": 13.5,
             "reference_mask": [
                 "10",
                 0

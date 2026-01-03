@@ -23,7 +23,7 @@
     },
     "3": {
         "inputs": {
-            "text": "text, watermark, low quality, blurry, deformed, nsfw",
+            "text": "text, watermark, low quality, blurry, deformed, nsfw, complex background, trees, forest, nature, landscape, outdoors, mountains, grass, moss, chaotic, busy",
             "clip": [
                 "1",
                 1
