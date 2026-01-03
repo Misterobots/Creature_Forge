@@ -26,8 +26,8 @@ export const generateCreatureConcept = async (answers: string[]): Promise<Creatu
     
     RECONSTRUCTION OPTIMIZATION (FOR TRIPOSR AI):
     - The prompt MUST specify: "Full body shot of the creature, t-pose or neutral standing pose, centered in frame, completely isolated on a solid #FFFFFF white background."
-    - Physics & Style: "Chunky soft vinyl toy aesthetic, thick limbs, solid connections between parts, low poly style, smooth matte clay texture, vibrant colors."
-    - Avoid: "Thin spindly legs, floating parts, glowing auras, smoke, particles, complex backgrounds, shadows, blur, or overlapping objects."
+    - Physics & Style: "High quality stylized 3D character design, Pixar-style render, detailed textures, expressive features, vibrant colors, studio lighting."
+    - Avoid: "Complex backgrounds, shadows, blur, overlapping objects, text, watermarks."
     
     Return a JSON object only.
   `;

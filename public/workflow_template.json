@@ -97,17 +97,4 @@
             "title": "Invert to Subject Mask"
         }
     },
-    "99": {
-        "inputs": {
-            "filename_prefix": "DEBUG_MASK_CHECK",
-            "images": [
-                "10",
-                0
-            ]
-        },
-        "class_type": "SaveImage",
-        "_meta": {
-            "title": "DEBUG: Save Mask"
-        }
-    }
 }

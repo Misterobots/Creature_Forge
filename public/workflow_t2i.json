@@ -10,7 +10,7 @@
     },
     "2": {
         "inputs": {
-            "text": "{{PROMPT}}, chunky vinyl toy, white background, high quality",
+            "text": "{{PROMPT}}, 3D render, character design, white background, high quality",
             "clip": [
                 "1",
                 1
