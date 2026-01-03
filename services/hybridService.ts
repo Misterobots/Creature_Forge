@@ -9,7 +9,53 @@ export interface GenerationStatus {
     progress?: number;
 }
 
-export const generateExternal3D = async (data: CreatureData): Promise<string> => {
+// Output structure
+export interface HybridOutput {
+    modelUrl?: string;
+    imageUrl?: string;
+}
+
+/**
+ * Stage 1: Generate 2D Image Locally via ComfyUI (SDXL Turbo)
+ */
+export const generateLocal2D = async (imagePrompt: string): Promise<string> => {
+    try {
+        // 1. Fetch T2I Workflow Template
+        const templateResponse = await fetch('/workflow_t2i.json');
+        if (!templateResponse.ok) throw new Error("Could not load T2I workflow template.");
+
+        let workflowStr = await templateResponse.text();
+
+        // 2. Inject Prompt
+        workflowStr = workflowStr.replace('{{PROMPT}}', imagePrompt);
+
+        // 3. Submit to ComfyUI
+        const workflowObj = JSON.parse(workflowStr);
+        const promptResponse = await fetch(`${API_ENDPOINT}/prompt`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: workflowObj })
+        });
+
+        if (!promptResponse.ok) throw new Error(`ComfyUI T2I rejected: ${promptResponse.statusText}`);
+
+        const promptResult = await promptResponse.json();
+        const promptId = promptResult.prompt_id;
+
+        console.log("Local 2D Generation started with ID:", promptId);
+
+        // 4. Poll and return only the Image URL
+        const result = await pollComfyHistory(promptId);
+        if (result.imageUrl) return result.imageUrl;
+        throw new Error("Local T2I completed but returned no image.");
+
+    } catch (error) {
+        console.error("Local 2D Generation Error:", error);
+        throw error;
+    }
+};
+
+export const generateExternal3D = async (data: CreatureData): Promise<HybridOutput> => {
     try {
         // 1. Fetch Workflow Template
         const templateResponse = await fetch('/workflow_template.json');
@@ -86,7 +132,8 @@ async function uploadToComfy(imageUrl: string): Promise<string> {
     return result.name;
 }
 
-const pollComfyHistory = async (promptId: string): Promise<string> => {
+// Update pollComfyHistory to return HybridOutput
+const pollComfyHistory = async (promptId: string): Promise<HybridOutput> => {
     const POLLING_INTERVAL = 1000;
     const MAX_ATTEMPTS = 120; // 2 minutes
 
@@ -101,32 +148,40 @@ const pollComfyHistory = async (promptId: string): Promise<string> => {
                 // Check if our ID exists in history keys
                 if (historyData[promptId]) {
                     const jobData = historyData[promptId];
-
-                    // Find outputs
                     const outputs = jobData.outputs;
                     if (!outputs) throw new Error("Job completed but gave no outputs.");
 
-                    // Look for the first output node (usually standard SaveImage or Save3D)
-                    // We just grab the first file we find
+                    const result: HybridOutput = {};
+
+                    // Iterate through ALL outputs to find images and models
                     for (const nodeId in outputs) {
                         const nodeOutput = outputs[nodeId];
+
+                        // Check for Images (2D Render)
                         if (nodeOutput.images && nodeOutput.images.length > 0) {
                             const img = nodeOutput.images[0];
-                            // Construct the View URL
-                            // ComfyUI format: /view?filename=...&type=output
-                            return `${API_ENDPOINT}/view?filename=${img.filename}&type=${img.type}&subfolder=${img.subfolder}`;
+                            result.imageUrl = `${API_ENDPOINT}/view?filename=${img.filename}&type=${img.type}&subfolder=${img.subfolder}`;
                         }
+
+                        // Check for Models (TripoSR Output)
                         if (nodeOutput.models && nodeOutput.models.length > 0) {
-                            // Some custom 3D nodes might return 'models' or files differently
-                            // Adjust based on specific 3D node output format
                             const model = nodeOutput.models[0];
-                            return `${API_ENDPOINT}/view?filename=${model.filename}&type=${model.type}&subfolder=${model.subfolder}`;
+                            result.modelUrl = `${API_ENDPOINT}/view?filename=${model.filename}&type=${model.type}&subfolder=${model.subfolder}`;
                         }
-                        // Fallback for generic files
-                        if (nodeOutput.files && nodeOutput.files.length > 0) {
+
+                        // Fallback: Check for generic files (sometimes models are here)
+                        // Only set if we haven't found a model yet, and the extension looks like a model
+                        if (!result.modelUrl && nodeOutput.files && nodeOutput.files.length > 0) {
                             const f = nodeOutput.files[0];
-                            return `${API_ENDPOINT}/view?filename=${f.filename}&type=${f.type}&subfolder=${f.subfolder}`;
+                            if (f.filename.endsWith('.glb') || f.filename.endsWith('.obj')) {
+                                result.modelUrl = `${API_ENDPOINT}/view?filename=${f.filename}&type=${f.type}&subfolder=${f.subfolder}`;
+                            }
                         }
+                    }
+
+                    // Only return if we found *something*
+                    if (result.modelUrl || result.imageUrl) {
+                        return result;
                     }
                 }
             }
