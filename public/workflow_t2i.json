@@ -10,7 +10,7 @@
     },
     "2": {
         "inputs": {
-            "text": "{{PROMPT}}, 3D render, character design, white background, high quality, flat lighting, soft lighting, diffused light",
+            "text": "{{PROMPT}}, (white background:1.5), 3D render, character design, high quality, flat lighting, soft lighting, diffused light",
             "clip": [
                 "1",
                 1
@@ -23,7 +23,7 @@
     },
     "3": {
         "inputs": {
-            "text": "text, watermark, low quality, blurry, deformed, nsfw, complex background, trees, forest, nature, landscape, outdoors, mountains, grass, moss, chaotic, busy, shadows, strong lighting, harsh shadows, ambient occlusion, high contrast",
+            "text": "text, watermark, low quality, blurry, deformed, nsfw, (complex background, trees, forest, nature, landscape, outdoors, mountains, grass, moss, chaotic, busy:1.3), shadows, strong lighting, harsh shadows, ambient occlusion, high contrast",
             "clip": [
                 "1",
                 1
