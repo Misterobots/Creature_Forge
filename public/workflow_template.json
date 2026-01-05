@@ -9,83 +9,28 @@
             "title": "Load Image"
         }
     },
-    "2": {
+    "10": {
         "inputs": {
-            "model": "model.ckpt",
-            "chunk_size": 8192
-        },
-        "class_type": "TripoSRModelLoader",
-        "_meta": {
-            "title": "Load TripoSR Model"
-        }
-    },
-    "3": {
-        "inputs": {
-            "reference_image": [
-                "4",
-                0
-            ],
-            "model": [
-                "2",
-                0
-            ],
-            "geometry_resolution": 1024,
-            "threshold": 3.0,
-            "reference_mask": [
-                "9",
-                1
-            ]
-        },
-        "class_type": "TripoSRSampler",
-        "_meta": {
-            "title": "TripoSR Generation"
-        }
-    },
-    "4": {
-        "inputs": {
-            "upscale_method": "bicubic",
-            "width": 512,
-            "height": 512,
-            "crop": "disabled",
-            "image": [
+            "images": [
                 "1",
                 0
-            ]
+            ],
+            "seed": 0,
+            "ss_guidance_strength": 7.5,
+            "slat_guidance_strength": 3.0,
+            "texture_size": 1024,
+            "mesh_simplify": 0.95
         },
-        "class_type": "ImageScale",
+        "class_type": "Trellis_Sampler",
         "_meta": {
-            "title": "Resize Image (Standard)"
+            "title": "Trellis 3D Generation"
         }
     },
-    "8": {
+    "11": {
         "inputs": {
+            "filename_prefix": "Trellis_Result",
             "mesh": [
-                "3",
-                0
-            ]
-        },
-        "class_type": "TripoSRViewer",
-        "_meta": {
-            "title": "TripoSR Mesh Viewer"
-        }
-    },
-    "9": {
-        "inputs": {
-            "image": [
-                "4",
-                0
-            ]
-        },
-        "class_type": "ImageRemBG",
-        "_meta": {
-            "title": "Remove Background (AI)"
-        }
-    },
-    "99": {
-        "inputs": {
-            "filename_prefix": "Creature_Model",
-            "mesh": [
-                "3",
+                "10",
                 0
             ]
         },
