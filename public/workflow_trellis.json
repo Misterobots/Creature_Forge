@@ -1,0 +1,42 @@
+{
+    "1": {
+        "inputs": {
+            "image": "example.png",
+            "upload": "image"
+        },
+        "class_type": "LoadImage",
+        "_meta": {
+            "title": "Load Image"
+        }
+    },
+    "10": {
+        "inputs": {
+            "images": [
+                "1",
+                0
+            ],
+            "seed": 0,
+            "ss_guidance_strength": 7.5,
+            "slat_guidance_strength": 3.0,
+            "texture_size": 1024,
+            "mesh_simplify": 0.95
+        },
+        "class_type": "Trellis_Sampler",
+        "_meta": {
+            "title": "Trellis 3D Generation"
+        }
+    },
+    "11": {
+        "inputs": {
+            "filename_prefix": "Trellis_Result",
+            "mesh": [
+                "10",
+                0
+            ]
+        },
+        "class_type": "SaveTripoSRMesh",
+        "_meta": {
+            "title": "Save 3D Model"
+        }
+    }
+}

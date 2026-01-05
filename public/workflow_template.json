@@ -32,8 +32,8 @@
             "geometry_resolution": 1024,
             "threshold": 3.0,
             "reference_mask": [
-                "10",
-                0
+                "9",
+                1
             ]
         },
         "class_type": "TripoSRSampler",
@@ -71,30 +71,14 @@
     },
     "9": {
         "inputs": {
-            "red": 255,
-            "green": 255,
-            "blue": 255,
-            "threshold": 60,
             "image": [
                 "4",
                 0
             ]
         },
-        "class_type": "MaskFromColor+",
+        "class_type": "ImageRemBG",
         "_meta": {
-            "title": "Select White Background (Aggressive)"
-        }
-    },
-    "10": {
-        "inputs": {
-            "mask": [
-                "9",
-                0
-            ]
-        },
-        "class_type": "InvertMask",
-        "_meta": {
-            "title": "Invert to Subject Mask"
+            "title": "Remove Background (AI)"
         }
     },
     "99": {
